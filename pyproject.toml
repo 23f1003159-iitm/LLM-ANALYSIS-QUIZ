@@ -1,0 +1,24 @@
+[project]
+name = "project-2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "fastapi>=0.115.0",
+    "groq>=0.37.1",
+    "httpx>=0.28.1",
+    "lxml>=6.0.2",
+    "matplotlib>=3.10.8",
+    "pandas>=2.3.3",
+    "playwright>=1.57.0",
+    "pymupdf>=1.26.7",
+    "python-dotenv>=1.2.1",
+    "uvicorn>=0.34.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.9",
+]

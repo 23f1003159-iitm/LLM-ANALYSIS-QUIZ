@@ -1,6 +1,6 @@
-"""LLM module - provides AI functions."""
+"""LLM Package."""
 
-from .client import MODELS as MODELS
-from .client import call as call
-from .client import hear as hear
-from .client import see as see
+from llm.client import MODEL, LLMClient
+from llm.prompts import SYSTEM_PROMPT, get_prompt
+
+__all__ = ["LLMClient", "MODEL", "SYSTEM_PROMPT", "get_prompt"]

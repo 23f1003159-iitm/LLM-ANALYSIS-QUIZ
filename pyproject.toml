@@ -1,24 +1,58 @@
 [project]
-name = "project-2"
-version = "0.1.0"
-description = "Add your description here"
+name = "tds-quiz-solver"
+version = "1.0.0"
+description = "Production-grade quiz solver for Tools in Data Science"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "beautifulsoup4>=4.14.3",
     "fastapi>=0.115.0",
-    "groq>=0.37.1",
     "httpx>=0.28.1",
-    "lxml>=6.0.2",
-    "matplotlib>=3.10.8",
-    "pandas>=2.3.3",
     "playwright>=1.57.0",
-    "pymupdf>=1.26.7",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
     "python-dotenv>=1.2.1",
     "uvicorn>=0.34.0",
+    "pypdf>=3.0.0",
+    "matplotlib>=3.8.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "scikit-learn>=1.4.0",
+    "networkx>=3.2.1",
+    "geopandas>=0.14.0",
+    "shapely>=2.0.0",
+    "bs4>=0.0.2",
+    "groq>=0.37.1",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.14.9",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.8.0",
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "SIM",    # flake8-simplify
+]
+ignore = ["E501"]  # line too long (handled by formatter)
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

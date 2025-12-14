@@ -9,14 +9,22 @@ wheels/
 # Virtual environments
 .venv
 
-# Environment variables (KEEP YOUR API KEYS SAFE!)
+# Project config
 .env
 
-# Log files and data
-log/
-data/
+# Logs
+logs/
 *.log
 
-# Quiz stats
-quiz_stats.json
-.env
+# Cache
+.ruff_cache/
+.DS_Store
+
+# Old data
+data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -5,6 +5,7 @@ from helpers.bs64_encoding import decode_base64, decode_base64_bytes, encode_bas
 from helpers.code import run_code
 from helpers.file import download, read_bytes, read_text
 from helpers.parser import extract_params, parse_csv, parse_html, parse_json
+from helpers.pdf import extract_pdf_tables, extract_pdf_text
 from helpers.unzip_zip import create_zip, list_zip, unzip, unzip_bytes
 from helpers.web import fetch_url, load_page, post_json
 
@@ -29,4 +30,6 @@ __all__ = [
     "unzip_bytes",
     "create_zip",
     "list_zip",
+    "extract_pdf_text",
+    "extract_pdf_tables",
 ]

@@ -2,6 +2,7 @@
 
 from helpers import download, read_text, transcribe_url
 from helpers.bs64_encoding import decode_base64
+from helpers.pdf import extract_pdf_text
 from helpers.sql import download_and_query
 from helpers.unzip_zip import unzip
 from logs.logger import get_logger
@@ -74,6 +75,31 @@ async def convert(scraped: dict) -> dict:
         try:
             logger.debug(f"Processing file: {href}")
             path = await download(href)
+
+            # Handle PDF files first (binary, can't read_text)
+            if href.endswith(".pdf"):
+                try:
+                    pdf_text = extract_pdf_text(path)
+                    parts.append(f"PDF CONTENT:\n{pdf_text}")
+                    data["pdf_content"] = pdf_text
+                    data["pdf_path"] = path
+                except Exception as pdf_e:
+                    parts.append(f"PDF ERROR ({href}): {pdf_e}")
+                continue
+
+            # Handle SQLite/DB files (binary, can't read_text)
+            if href.endswith(".sqlite") or href.endswith(".db"):
+                try:
+                    results = await download_and_query(
+                        href, "SELECT COUNT(*) FROM users WHERE age > 18"
+                    )
+                    parts.append(f"SQL QUERY RESULT (users age>18): {results[0][0]}")
+                    data["sql_result"] = results[0][0]
+                except Exception as sql_e:
+                    parts.append(f"SQL FILE ({href}): Error - {sql_e}")
+                continue
+
+            # Read text for text-based formats
             content = read_text(path)
 
             if href.endswith(".csv"):
@@ -81,17 +107,9 @@ async def convert(scraped: dict) -> dict:
                 data["csv_content"] = content
                 data["csv_path"] = path
 
-            elif href.endswith(".sql") or href.endswith(".sqlite") or href.endswith(".db"):
-                # SQL file - try to query users table
-                try:
-                    results = await download_and_query(
-                        href, "SELECT COUNT(*) FROM users WHERE age > 18"
-                    )
-                    parts.append(f"SQL QUERY RESULT (users age>18): {results[0][0]}")
-                    data["sql_result"] = results[0][0]
-                except Exception:
-                    parts.append(f"SQL FILE ({href}): Downloaded, content:\n{content[:1000]}")
-                    data["sql_content"] = content
+            elif href.endswith(".sql"):
+                parts.append(f"SQL FILE ({href}): Downloaded, content:\n{content[:1000]}")
+                data["sql_content"] = content
 
             elif href.endswith(".json"):
                 parts.append(f"JSON DATA:\n{content}")

@@ -39,6 +39,7 @@ print(int(result))
 - Use only provided variables
 - Keep code focused on the task
 
+
 ---
 
 ### TOOL: SCRAPE
@@ -93,12 +94,27 @@ ANSWER: <exact value only>
 - Array format: `[{"id":1,"name":"John"},{"id":2,"name":"Alice"}]`
 - NOT wrapped in object: `{"data": [...]}`
 
+**JSON Objects (category summaries, grouped data):**
+- Just the data object: `{"Food": 74.75, "Transport": 35.25}`
+- NEVER include email, secret, or url fields
+- The answer IS the data object, not a submission wrapper
+
 **YAML:**
 - Raw text with newlines
 - NO backticks, NO markdown
 ```
 - name: Run tests
   run: npm test
+```
+
+**Python Code Snippets (routes, functions):**
+- Include decorator AND function definition
+- NO imports, NO app initialization
+- Example for FastAPI route:
+```
+@app.post('/submit')
+def submit(name: str, age: int):
+    return {"status": "ok", "message": "User registered"}
 ```
 
 **Shell Commands:**

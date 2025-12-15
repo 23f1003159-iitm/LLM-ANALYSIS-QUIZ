@@ -13,9 +13,6 @@ wheels/
 .env
 
 # Logs
-logs/
-*.log
-
 # Cache
 .ruff_cache/
 .DS_Store

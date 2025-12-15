@@ -164,6 +164,7 @@ def extract_answer(response: str) -> str:
 
     Looks for ANSWER: pattern in the response and extracts the value.
     Preserves newlines for multi-line answers (e.g., YAML).
+    Strips markdown code blocks and cleans up formatting.
 
     Args:
         response: LLM response text
@@ -174,20 +175,69 @@ def extract_answer(response: str) -> str:
     Note:
         Uses strip(' \\t') instead of strip() to preserve newlines in YAML.
     """
-    # Check for ANSWER: pattern
-    match = re.search(r"ANSWER:\s*(.+?)(?:\n\n|```|$)", response, re.DOTALL)
+    # Check for ANSWER: followed by code block (```python\n...\n```)
+    match = re.search(r"ANSWER:\s*```(?:python)?\n(.+?)```", response, re.DOTALL)
     if match:
-        answer = match.group(1)
-        # Only strip leading/trailing spaces, preserve internal newlines
-        return answer.strip(" \t")
+        answer = match.group(1).strip()
+        return answer
 
-    # Check for TOOL: SUBMIT pattern
-    match = re.search(r"TOOL:\s*SUBMIT\s*\n.*?ANSWER:\s*(.+?)(?:\n\n|```|$)", response, re.DOTALL)
+    # Check for ANSWER: pattern (inline or multi-line)
+    match = re.search(r"ANSWER:\s*(.+)", response, re.DOTALL)
     if match:
         answer = match.group(1)
-        return answer.strip(" \t")
+        # Clean up the answer
+        answer = clean_answer(answer)
+        # Stop at double newline if present
+        if "\n\n" in answer:
+            answer = answer.split("\n\n")[0]
+        return answer.strip()
+
+    # Check for TOOL: SUBMIT pattern with code block
+    match = re.search(
+        r"TOOL:\s*SUBMIT\s*\n.*?ANSWER:\s*```(?:python)?\n(.+?)```", response, re.DOTALL
+    )
+    if match:
+        answer = match.group(1).strip()
+        return answer
+
+    # Check for TOOL: SUBMIT pattern (inline)
+    match = re.search(r"TOOL:\s*SUBMIT\s*\n.*?ANSWER:\s*(.+)", response, re.DOTALL)
+    if match:
+        answer = match.group(1)
+        answer = clean_answer(answer)
+        if "\n\n" in answer:
+            answer = answer.split("\n\n")[0]
+        return answer.strip()
 
     return ""
+
+
+def clean_answer(answer: str) -> str:
+    """Clean up extracted answer.
+
+    Removes markdown code blocks, strips whitespace, and fixes formatting.
+
+    Args:
+        answer: Raw extracted answer
+
+    Returns:
+        str: Cleaned answer
+    """
+    answer = answer.strip()
+
+    # Remove markdown code blocks (```python, ```, etc.)
+    if answer.startswith("```"):
+        # Find the end of the first line (language specifier)
+        first_newline = answer.find("\n")
+        if first_newline != -1:
+            answer = answer[first_newline + 1 :]
+        # Remove trailing ```
+        if answer.endswith("```"):
+            answer = answer[:-3]
+        answer = answer.strip()
+
+    # Strip leading/trailing spaces but preserve internal newlines
+    return answer.strip(" \t")
 
 
 def extract_code(response: str) -> str:
